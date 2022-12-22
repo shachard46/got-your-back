@@ -14,12 +14,12 @@ import numpy as np
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
-
 # Initialize some variables
 face_locations = []
 face_encodings = []
 face_names = []
 process_this_frame = True
+img = face_recognition.face_encodings(face_recognition.load_image_file('face.jpg'))[0]
 
 while True:
     # Grab a single frame of video
@@ -34,6 +34,8 @@ while True:
 
         # Find all the faces and face encodings in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame)
+        # face_distance = face_recognition.face_distance(
+        #     face_recognition.face_encodings(frame), img)
     # Display the results
     for (top, right, bottom, left) in face_locations:
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
@@ -41,7 +43,8 @@ while True:
         right *= 3
         bottom *= 3
         left *= 3
-
+        # print('locations', face_locations)
+        # print('distance: ', face_distance)/
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
     # Display the resulting image

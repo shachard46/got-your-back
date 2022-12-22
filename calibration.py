@@ -45,9 +45,8 @@ def has_face(frame):
         return False
 
 
-status = True
-while status == True:
+status = False
+while not status:
     status = get_webcam_screenshot()
-    print(status == True)
 
 print("data saved")

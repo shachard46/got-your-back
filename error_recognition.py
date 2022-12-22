@@ -10,47 +10,55 @@ def get_smaller_frame(frame, ratio=0.33):
     return small_frame[:, :, ::-1]
 
 
-def take_samples(amount, video):
+def take_samples(amount):
     frames = []
-    for i in range(amount):
-        ret, frame = video.read()
-        # small_frame = get_smaller_frame(frame)
-        frames.append(frame)
+    video_capture = cv2.VideoCapture(0)
+    frames = [video_capture.read()[1] for i in range(amount)]
+    # small_frame = get_smaller_frame(frame)
+    video_capture.release()
     return frames
 
 
-def get_faces_encodings(frames):
-    return [face_recognition.face_encodings(frame)[0] for frame in frames]
+def get_faces_locations(frames):
+    return [face_recognition.face_locations(frame)[0] for frame in frames]
 
 
-def get_average_distance(encodings, cal):
-    return np.average(face_recognition.face_distance(encodings, cal))
+def get_face_center(location):
+    t, r, b, l = location
+    return np.array([(r - l) / 2, (t - b) / 2])
+
+
+def get_face_distance(face, cal):
+    return np.linalg.norm(face - cal)
+
+
+def get_average_distance(locations, cal):
+    locations = [get_face_center(location) for location in locations]
+    cal = get_face_center(cal)
+    return np.average([get_face_distance(location, cal) for location in locations])
 
 
 def is_sitting_wrong(tol, dist):
     return dist > tol
 
 
-video_capture = cv2.VideoCapture(0)
-
-# Initialize some variables
-face_locations = []
-face_encodings = []
-face_names = []
-process_this_frame = True
-img = face_recognition.face_encodings(
-    face_recognition.load_image_file('face.jpg'))[0]
+def read_json(path):
+    data = {}
+    with open(path, 'r') as f:
+        data = np.array(json.load(f)['position'])
+    return data
 
 
 def main():
     for i in range(5):
-        frames = take_samples(10, video_capture=cv2.VideoCapture(0))
-        encodings = get_faces_encodings(frames)
-        cal = json.load('')
-        wrong = is_sitting_wrong(0.1, get_average_distance(encodings, cal))
+        frames = take_samples(10)
+        locations = get_faces_locations(frames)
+        cal = read_json('data.json')
+        distance = get_average_distance(locations, cal)
+        print(distance)
+        wrong = is_sitting_wrong(0.1, distance)
         print(wrong)
         sleep(60)
-    video_capture.release()
 
 
 main()

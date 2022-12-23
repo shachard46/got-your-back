@@ -3,6 +3,7 @@ import json
 import face_recognition
 import cv2
 import numpy as np
+from notification import Notification
 
 
 class FaceMovementRecognition:
@@ -21,37 +22,38 @@ class FaceMovementRecognition:
         return [face_recognition.face_locations(frame)[0] for frame in frames
                 if face_recognition.face_locations(frame)]
 
-    def __get_average_differance(self, locations, compute, get_diff):
+    def __get_average_differance(self, locations, compute, get_diff, avg):
         locations = [compute(location) for location in locations]
         d_cal = compute(self.cal)
-        return np.average([get_diff(location, d_cal) for location in locations])
+        return avg([get_diff(location, d_cal) for location in locations])
 
     def __get_average_distance(self, locations):
-        self.__get_average_differance(locations, FaceMovementRecognition.__get_face_center,
-                                      FaceMovementRecognition.get_face_distance)
+        return self.__get_average_differance(locations, FaceMovementRecognition.__get_face_center,
+                                             FaceMovementRecognition.get_face_distance, lambda lists:
+                                                 [sum(lists[i][j] for i in range(len(lists))) / len(lists) for j in range(len(lists[0]))])
 
     def __get_average_ratio(self, locations):
-        self.__get_average_differance(locations, FaceMovementRecognition.__get_rect_size,
-                                      lambda a, b: a / b)
+        return self.__get_average_differance(locations, FaceMovementRecognition.__get_rect_size,
+                                             lambda a, b: a / b, np.average)
 
     def check_z_movement(self, locations):
         ratio = self.__get_average_ratio(locations)
-        if ratio < 1 - self.ztol:
+        if ratio < (1 - self.ztol):
             return "Sit Closer"
-        if ratio > 1 + self.ztol:
+        if ratio > (1 + self.ztol):
             return "Sit Further"
         return "Damn You Good"
 
     def check_xy_movement(self, locations):
         x, y = self.__get_average_distance(locations)
         if x > self.xytol:
-            x_msg = f"Right: {x}\n"
+            x_msg = f"Move Right"
         elif x < -self.xytol:
-            x_msg = f"Left: {x}\n"
+            x_msg = f"Move Left"
         if y > self.xytol:
-            y_msg = f"Up: {y}\n"
+            y_msg = f"Move Up"
         elif y < self.xytol:
-            y_msg = f"Down: {y}\n"
+            y_msg = f"Move Down"
         return (x_msg, y_msg) if x_msg and y_msg else ("Damn Bro", "Damn Bro")
 
     def is_sitting_wrong(self):
@@ -88,11 +90,25 @@ def get_smaller_frame(frame, ratio=0.33):
     return small_frame[:, :, ::-1]
 
 
+def handle_status(status: dict):
+    notification = Notification('alert', '')
+    for ax in status.keys():
+        if status[ax]:
+            notification.set_message(status[ax])
+            notification.notify()
+
+
 def main():
     cal = read_calibration_data('data.json')
     rec = FaceMovementRecognition(cal, 20, 0.2)
     while True:
         status = rec.is_sitting_wrong()
-
-        notification(title, message)
+        handle_status(status)
         sleep(300)
+
+
+main()
+
+
+average_list = [sum(lists[i][j] for i in range(len(lists))) /
+                len(lists) for j in range(len(lists[0]))]

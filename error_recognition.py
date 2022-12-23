@@ -12,9 +12,9 @@ class FaceMovementRecognition:
         self.ztol = z_tolerance
         self.xytol = xy_tolerance
         self.cal = calibration
-        self.video_capture = cv2.VideoCapture(0)
 
     def __take_samples(self, amount):
+        self.video_capture = cv2.VideoCapture(0)
         frames = [self.video_capture.read()[1] for i in range(amount)]
         self.video_capture.release()
         return frames
@@ -39,6 +39,7 @@ class FaceMovementRecognition:
 
     def check_z_movement(self, locations):
         ratio = self.__get_average_ratio(locations)
+        print(ratio)
         if ratio < (1 - self.ztol):
             return "Sit Closer"
         if ratio > (1 + self.ztol):
@@ -62,6 +63,9 @@ class FaceMovementRecognition:
 
     def check_xy_movement(self, locations):
         x, y = self.__get_average_distance(locations)
+        print(x, y)
+        x_msg = None
+        y_msg = None
         if x > self.xytol:
             x_msg = f"Move Right"
         elif x < -self.xytol:
@@ -110,8 +114,9 @@ def handle_status(status: dict):
     notification = Notification('alert', '')
     for ax in status.keys():
         if status[ax]:
-            notification.set_message(status[ax])
-            notification.notify()
+            # notification.set_message(status[ax])
+            # notification.notify()
+            print(status[ax])
 
 
 def main():
@@ -120,11 +125,7 @@ def main():
     while True:
         status = rec.is_sitting_wrong()
         handle_status(status)
-        sleep(300)
+        sleep(10)
 
 
 main()
-
-
-average_list = [sum(lists[i][j] for i in range(len(lists))) /
-                len(lists) for j in range(len(lists[0]))]

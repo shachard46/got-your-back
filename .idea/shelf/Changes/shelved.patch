@@ -1,0 +1,43 @@
+Index: check_potion.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/check_potion.py b/check_potion.py
+new file mode 100644
+--- /dev/null	(date 1671794662478)
++++ b/check_potion.py	(date 1671794662478)
+@@ -0,0 +1,33 @@
++import time
++import json
++
++with open('data.json', 'r') as f:
++    data = json.load(f)
++first_four = data['position'][:4]
++
++coefficient_x = 20
++coefficient_y = 20
++default_x = (first_four[0] + first_four[1]) / 2
++default_y = (first_four[2] + first_four[3]) / 2
++
++
++
++num_checks = 10
++while True:
++    true_in = 0
++    #imput face location
++    center_x = (first_four[0] + first_four[1]) / 2
++    center_y = (first_four[2] + first_four[3]) / 2
++    for i in range(num_checks):
++        if default_x - center_x >= abs(coefficient_x):
++            if default_y - center_y >= abs(coefficient_y):
++                true_in = true_in + 1
++        #wait 5 min
++        if true_in >= 5:
++            print("BAD IMPOSTER")
++        else:
++            print("YOUR GOOD")
++        time.sleep(300)
++    break
++
++

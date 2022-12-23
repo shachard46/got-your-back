@@ -1,0 +1,104 @@
+Index: test_rotem.1.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/test_rotem.1.py b/test_rotem.1.py
+new file mode 100644
+--- /dev/null	(date 1671794662476)
++++ b/test_rotem.1.py	(date 1671794662476)
+@@ -0,0 +1,94 @@
++import json
++import face_recognition
++import cv2
++import time
++
++
++def get_webcam_screenshot():
++    # Open the webcam
++    cap = cv2.VideoCapture(0)
++
++    # Take a single frame from the webcam
++    ret, frame = cap.read()
++
++    # Release the webcam
++    cap.release()
++
++    # Return the frame as a NumPy array
++    return has_face(frame)
++
++
++def has_face(frame):
++    # Convert the frame to a format that the face_recognition library can process
++    small_frame = frame[:, :, ::-1]
++
++    # Use the face_locations function to detect faces in the frame
++    face_locations = face_recognition.face_locations(small_frame)
++
++    # If the face_locations function returns at least one face, return True
++    if len(face_locations) > 0:
++        face_data = {}
++        for (top, right, bottom, left) in face_locations:
++            face_encodings = face_recognition.face_encodings(
++                frame, face_locations)
++            #print(face_encodings[0])
++            # Get the face encoding for the face
++            # Store the position and encoding data for the face in a dictionary
++            face_data.update({
++                "position": [top, right, bottom, left],
++                #"encoding": list(face_encodings[0])
++            })
++        with open('data.json', 'w') as outfile:
++            # Write the dictionary to the file as pretty-printed JSON
++            json.dump(face_data, outfile, indent=4)
++        return face_data
++    else:
++        return False
++
++
++status = False
++while not status:
++    status = get_webcam_screenshot()
++
++print("data saved")
++
++def screen_face():
++    get_webcam_screenshot()
++    with open('data.json', 'r') as f:
++        data = json.load(f)
++    first_four = data['position'][:4]
++    status = False
++    while not status:
++        status = get_webcam_screenshot()
++    print(first_four)
++    return first_four
++
++
++with open('data.json', 'r') as f:
++    data = json.load(f)
++first_four = data['position'][:4]
++
++
++diffult_x = (first_four[0] + first_four[2])/2
++diffult_y = (first_four[1] + first_four[3])/2
++
++coefficient_x = 1
++coefficient_y = 1
++
++num_checks = 40
++
++while True:
++    screen_face()
++    poiton_x = ((first_four[0] + first_four[2])/2)
++    poiton_y = ((first_four[1] + first_four[3])/2)
++    delta_x = diffult_xy[0] - poiton_xy[0]
++    delta_y = diffult_xy[1] - poiton_xy[1]
++    print(dalta_x , delta_y)
++        #wait 5 min
++    if true_in >= 5:
++        print("BAD IMPOSTER")
++    else:
++        print("YOUR GOOD")
++    time.sleep(10)
++
++

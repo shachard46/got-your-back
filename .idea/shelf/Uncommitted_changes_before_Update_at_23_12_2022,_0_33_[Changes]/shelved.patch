@@ -1,0 +1,144 @@
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(date 1671739781973)
++++ b/.idea/modules.xml	(date 1671739781973)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/got-your-back.iml" filepath="$PROJECT_DIR$/.idea/got-your-back.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1671745805755)
++++ b/.idea/misc.xml	(date 1671745805755)
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10" project-jdk-type="Python SDK" />
++</project>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+new file mode 100644
+--- /dev/null	(date 1671739781981)
++++ b/.idea/inspectionProfiles/profiles_settings.xml	(date 1671739781981)
+@@ -0,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1671739781984)
++++ b/.idea/vcs.xml	(date 1671739781984)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1671739782074)
++++ b/.idea/.gitignore	(date 1671739782074)
+@@ -0,0 +1,3 @@
++# Default ignored files
++/shelf/
++/workspace.xml
+Index: position_check.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/position_check.py b/position_check.py
+new file mode 100644
+--- /dev/null	(date 1671748317070)
++++ b/position_check.py	(date 1671748317070)
+@@ -0,0 +1,34 @@
++import time
++import json
++
++coefficient_x = 20
++coefficient_y = 20
++default_x = 1
++default_y = 1
++
++with open('path/to/file.json', 'r') as f:
++    # Load the JSON data from the file
++    data = json.load(f)
++
++# The data variable now contains the JSON data as a Python object
++print(data)
++
++
++num_checks = 10
++while True:
++    true_in = 0
++    #imput face location
++    center_x = 0
++    center_y = 0
++    for i in range(num_checks):
++        if default_x - center_x >= abs(coefficient_x):
++            if default_y - center_y >= abs(coefficient_y):
++                true_in = true_in + 1
++        #wait 5 min
++        if true_in >= 5:
++             print("BAD IMPOSTER")
++         else:
++             print("YOUR GOOD")
++         time.sleep(300)
++     break
++
+Index: .idea/got-your-back.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/got-your-back.iml b/.idea/got-your-back.iml
+new file mode 100644
+--- /dev/null	(date 1671745805750)
++++ b/.idea/got-your-back.iml	(date 1671745805750)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="PYTHON_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="jdk" jdkName="Python 3.10" jdkType="Python SDK" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file

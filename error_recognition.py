@@ -59,10 +59,10 @@ class FaceMovementRecognition:
         self.faces: list[Face] = []
 
     def __take_samples(self, amount):
-        self.video_capture = cv2.VideoCapture(0)
-        self.faces = [Face(self.video_capture.read())
+        video_capture = cv2.VideoCapture(0)
+        self.faces = [Face(video_capture.read())
                       for i in range(amount)]
-        self.video_capture.release()
+        video_capture.release()
 
     def __get_avg_eyes_center(self):
         return np.average([face.get_eyes_center() for face in self.faces])

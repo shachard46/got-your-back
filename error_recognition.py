@@ -39,7 +39,11 @@ def get_average_distance(locations, cal):
     return np.average([get_face_distance(location, cal) for location in locations])
 
 
-def is_sitting_wrong(tol, dist):
+def is_sitting_wrong(tol, cal):
+    frames = take_samples(10)
+    locations = get_faces_locations(frames)
+    cal = read_json(cal)
+    dist = get_average_distance(locations, cal)
     return dist > tol
 
 
@@ -51,14 +55,7 @@ def read_json(path):
 
 
 def main():
-    for i in range(5):
-        frames = take_samples(10)
-        locations = get_faces_locations(frames)
-        cal = read_json('data.json')
-        distance = get_average_distance(locations, cal)
-        print(distance)
-        wrong = is_sitting_wrong(0.1, distance)
-        print(wrong)
-        sleep(60)
-
-
+    while True:
+        if is_sitting_wrong(4):
+            notification(title, message)
+        sleep(300)

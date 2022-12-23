@@ -149,7 +149,7 @@ def main():
     rec = FaceMovementRecognition(cal, 20, 0.2, 10)
     while True:
         status = rec.is_sitting_wrong()
-        handle_status(status)
+        handle_status(status) 
         sleep(10)
 
 

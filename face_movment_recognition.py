@@ -135,35 +135,3 @@ class FaceMovementRecognition:
         else:
             return {'bad': "Face Not Found"}
 
-
-def read_calibration_data(path):
-    data = {}
-    with open(path, 'r') as f:
-        data = np.array(json.load(f)['image']).astype('uint8')
-    return data
-
-
-def get_smaller_frame(frame, ratio=0.33):
-    small_frame = cv2.resize(frame, None, fx=ratio, fy=ratio)
-    return small_frame[:, :, ::-1]
-
-
-def handle_status(status: dict):
-    notification = Notification('alert', '')
-    for ax in status.keys():
-        if status[ax]:
-            # notification.set_message(status[ax])
-            # notification.notify()
-            print(status[ax])
-
-
-def main():
-    cal = read_calibration_data('data.json')
-    rec = FaceMovementRecognition(cal, 20, 0.2, 10)
-    while True:
-        status = rec.is_sitting_wrong()
-        handle_status(status)
-        sleep(10)
-
-
-main()

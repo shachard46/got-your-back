@@ -25,20 +25,20 @@ class Face:
         locations = face_recognition.face_locations(self.frame)
         return locations[0] if locations else None
 
-    def get_eyes_loaction(self):
+    def get_eyes_location(self):
         face_landmarks = face_recognition.face_landmarks(self.frame)
         left_eye = face_landmarks[0]["left_eye"]
         right_eye = face_landmarks[0]["right_eye"]
         return left_eye, right_eye
 
     def get_face_angle(self):
-        l_center, r_center = self.__get_eyes_center()
+        l_center, r_center = self.get_eyes_center()
         x1, y1 = l_center
         x2, y2 = r_center
         return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
     def get_eyes_distance(self):
-        left, right = self.get_eyes_locations()
+        left, right = self.get_eyes_location()
         return get_distance(left, right)
 
     def get_face_center(self):
@@ -46,7 +46,7 @@ class Face:
         return get_center((l, t), (r, b))
 
     def get_eyes_center(self):
-        left_eye, right_eye = self.get_eyes_loaction()
+        left_eye, right_eye = self.get_eyes_location()
         return get_center(left_eye, right_eye)
 
 
@@ -60,7 +60,7 @@ class FaceMovementRecognition:
 
     def __take_samples(self, amount):
         self.video_capture = cv2.VideoCapture(0)
-        self.faces = [Face(self.video_capture.read())[1]
+        self.faces = [Face(self.video_capture.read())
                       for i in range(amount)]
         self.video_capture.release()
 
@@ -95,7 +95,6 @@ class FaceMovementRecognition:
 
     def check_xy_movement(self):
         x, y = self.__get_xy_movement()
-        print(x, y)
         x_msg = None
         y_msg = None
         if x > self.xytol:
@@ -149,7 +148,7 @@ def main():
     rec = FaceMovementRecognition(cal, 20, 0.2, 10)
     while True:
         status = rec.is_sitting_wrong()
-        handle_status(status) 
+        handle_status(status)
         sleep(10)
 
 

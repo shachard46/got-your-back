@@ -4,6 +4,7 @@ import face_recognition
 import cv2
 import numpy as np
 from notification import Notification
+import math
 
 
 class FaceMovementRecognition:
@@ -44,6 +45,21 @@ class FaceMovementRecognition:
         if ratio > (1 + self.ztol):
             return "Sit Further"
         return "Damn You Good"
+
+    def get_eyes_fata(frame):
+        face_landmarks = face_recognition.face_landmarks(frame)
+        left_eye = face_landmarks[0]["left_eye"]
+        right_eye = face_landmarks[0]["right_eye"]
+        left_eye_center = (sum(x[0] for x in left_eye) // len(left_eye),
+                           sum(x[1] for x in left_eye) // len(left_eye))
+
+        right_eye_center = (sum(x[0] for x in right_eye) // len(right_eye),
+                            sum(x[1] for x in right_eye) // len(right_eye))
+
+        x1, y1 = left_eye_center
+        x2, y2 = right_eye_center
+        angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
+        return right_eye, right_eye, angle
 
     def check_xy_movement(self, locations):
         x, y = self.__get_average_distance(locations)

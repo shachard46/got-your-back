@@ -66,3 +66,6 @@ def calibrate():
     cap.release()
 
     return image_b64
+
+
+calibrate()

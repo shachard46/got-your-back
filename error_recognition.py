@@ -57,6 +57,11 @@ def read_json(path):
 
 def main():
     while True:
-        if is_sitting_wrong(4):
+        if is_sitting_wrong(4, "data.json"):
             nottfitcation("Alert", "Chaing position")
-        sleep(300)
+        else:
+            nottfitcation("Good", "Cool cool cool")
+        sleep(10)
+
+
+main()

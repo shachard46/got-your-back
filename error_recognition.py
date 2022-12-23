@@ -14,7 +14,7 @@ def get_center(p1, p2):
 
 
 def get_distance(p1, p2):
-    return [f1 - f2 for f1, f2 in zip(p1, p2)]
+    return np.linalg.norm(np.array(p1) - np.array(p2))
 
 
 class Face:
@@ -29,12 +29,17 @@ class Face:
         face_landmarks = face_recognition.face_landmarks(self.frame)
         left_eye = face_landmarks[0]["left_eye"]
         right_eye = face_landmarks[0]["right_eye"]
-        return left_eye, right_eye
+        left_eye_center = (sum(x[0] for x in left_eye) // len(left_eye),
+                           sum(x[1] for x in left_eye) // len(left_eye))
+
+        right_eye_center = (sum(x[0] for x in right_eye) // len(right_eye),
+                            sum(x[1] for x in right_eye) // len(right_eye))
+        return left_eye_center, right_eye_center
 
     def get_face_angle(self):
-        l_center, r_center = self.get_eyes_center()
-        x1, y1 = l_center
-        x2, y2 = r_center
+        l, r = self.get_eyes_location()
+        x1, y1 = l
+        x2, y2 = r
         return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
     def get_eyes_distance(self):
@@ -51,7 +56,7 @@ class Face:
 
 
 class FaceMovementRecognition:
-    def __init__(self, calibration, xy_tolerance, angle_tolerance, z_tolerance=0.4) -> None:
+    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance) -> None:
         self.ztol = z_tolerance
         self.atol = angle_tolerance
         self.xytol = xy_tolerance
@@ -59,13 +64,19 @@ class FaceMovementRecognition:
         self.faces: list[Face] = []
 
     def __take_samples(self, amount):
-        video_capture = cv2.VideoCapture(0)
-        self.faces = [Face(video_capture.read())
-                      for i in range(amount)]
-        video_capture.release()
+        self.video_capture = cv2.VideoCapture(0)
+        try:
+            self.faces = [Face(self.video_capture.read()[1])
+                          for i in range(amount)]
+            self.faces[0].get_eyes_location()
+        except:
+            self.faces = []
+        self.video_capture.release()
 
     def __get_avg_eyes_center(self):
-        return np.average([face.get_eyes_center() for face in self.faces])
+        faces = [face.get_eyes_center() for face in self.faces]
+        return [sum(faces[i][j] for i in range(len(faces))) / len(faces)
+                for j in range(len(faces[0]))]
 
     def __get_avg_eyes_distance(self):
         return np.average([face.get_eyes_distance() for face in self.faces])
@@ -116,16 +127,19 @@ class FaceMovementRecognition:
 
     def is_sitting_wrong(self):
         self.__take_samples(10)
-        return {'z': self.check_z_movement(),
-                'x': self.check_xy_movement()[0],
-                'y': self.check_xy_movement()[1],
-                'angle': self.check_angle_movement()}
+        if self.faces:
+            return {'z': self.check_z_movement(),
+                    'x': self.check_xy_movement()[0],
+                    'y': self.check_xy_movement()[1],
+                    'angle': self.check_angle_movement()}
+        else:
+            return {'bad': "Face Not Found"}
 
 
 def read_calibration_data(path):
     data = {}
     with open(path, 'r') as f:
-        data = np.array(json.load(f)['position'])
+        data = np.array(json.load(f)['image']).astype('uint8')
     return data
 
 

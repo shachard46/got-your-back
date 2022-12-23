@@ -7,90 +7,94 @@ from notification import Notification
 import math
 
 
+def get_center(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return np.array([(x1 - x2) / 2, (y1 - y2) / 2])
+
+
+def get_distance(p1, p2):
+    return [f1 - f2 for f1, f2 in zip(p1, p2)]
+
+
 class Face:
     def __init__(self, frame) -> None:
         self.frame = frame
 
-    def __get_face_locations(self):
+    def get_face_location(self):
         locations = face_recognition.face_locations(self.frame)
         return locations[0] if locations else None
 
-    def get_eyes_locations(frame):
-        face_landmarks = face_recognition.face_landmarks(frame)
+    def get_eyes_loaction(self):
+        face_landmarks = face_recognition.face_landmarks(self.frame)
         left_eye = face_landmarks[0]["left_eye"]
         right_eye = face_landmarks[0]["right_eye"]
-        left_eye_center = (sum(x[0] for x in left_eye) // len(left_eye),
-                           sum(x[1] for x in left_eye) // len(left_eye))
+        return left_eye, right_eye
 
-        right_eye_center = (sum(x[0] for x in right_eye) // len(right_eye),
-                            sum(x[1] for x in right_eye) // len(right_eye))
+    def get_face_angle(self):
+        l_center, r_center = self.__get_eyes_center()
+        x1, y1 = l_center
+        x2, y2 = r_center
+        return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
-        x1, y1 = left_eye_center
-        x2, y2 = right_eye_center
-        angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
-        return right_eye, right_eye, angle
-    
-    @staticmethod
-    def __get_center(location):
-        t, r, b, l = location
-        return np.array([(r - l) / 2, (t - b) / 2])
+    def get_eyes_distance(self):
+        left, right = self.get_eyes_locations()
+        return get_distance(left, right)
+
+    def get_face_center(self):
+        t, r, b, l = self.get_face_location()
+        return get_center((l, t), (r, b))
+
+    def get_eyes_center(self):
+        left_eye, right_eye = self.get_eyes_loaction()
+        return get_center(left_eye, right_eye)
+
 
 class FaceMovementRecognition:
-    def __init__(self, calibration, xy_tolerance, z_tolerance=0.4) -> None:
+    def __init__(self, calibration, xy_tolerance, angle_tolerance, z_tolerance=0.4) -> None:
         self.ztol = z_tolerance
+        self.atol = angle_tolerance
         self.xytol = xy_tolerance
-        self.cal = calibration
+        self.cal = Face(calibration)
+        self.faces: list[Face] = []
 
     def __take_samples(self, amount):
         self.video_capture = cv2.VideoCapture(0)
-        frames = [self.video_capture.read()[1] for i in range(amount)]
+        self.faces = [Face(self.video_capture.read())[1]
+                      for i in range(amount)]
         self.video_capture.release()
-        return frames
 
-    def __get_faces_locations(self, frames):
-        return [face_recognition.face_locations(frame)[0] for frame in frames
-                if face_recognition.face_locations(frame)]
+    def __get_avg_eyes_center(self):
+        return np.average([face.get_eyes_center() for face in self.faces])
 
-    def __get_average_differance(self, locations, compute, get_diff, avg):
-        locations = [compute(location) for location in locations]
-        d_cal = compute(self.cal)
-        return avg([get_diff(location, d_cal) for location in locations])
+    def __get_avg_eyes_distance(self):
+        return np.average([face.get_eyes_distance() for face in self.faces])
 
-    def __get_average_distance(self, locations):
-        return self.__get_average_differance(locations, FaceMovementRecognition.__get_face_center,
-                                             FaceMovementRecognition.get_face_distance, lambda lists:
-                                                 [sum(lists[i][j] for i in range(len(lists))) / len(lists) for j in range(len(lists[0]))])
+    def __get_avg_face_angle(self):
+        return np.average([face.get_face_angle() for face in self.faces])
 
-    def __get_average_ratio(self, locations):
-        return self.__get_average_differance(locations, FaceMovementRecognition.__get_rect_size,
-                                             lambda a, b: a / b, np.average)
+    def __get_ratio(self):
+        return self.__get_avg_eyes_distance() / self.cal.get_eyes_distance()
 
-    def check_z_movement(self, locations):
-        ratio = self.__get_average_ratio(locations)
-        print(ratio)
+    def __get_xy_movement(self):
+        eye_center = self.__get_avg_eyes_center()
+        x, y = (eye_center[i] - self.cal.get_eyes_center()[i]
+                for i in range(len(eye_center)))
+        return x, y
+
+    def __get_angle_change(self):
+        return self.__get_avg_face_angle() - self.cal.get_face_angle()
+
+    def check_z_movement(self):
+        ratio = self.__get_ratio()
         if ratio < (1 - self.ztol):
             return "Sit Closer"
         if ratio > (1 + self.ztol):
             return "Sit Further"
         return "Damn You Good"
 
-    def get_eyes_locations(frame):
-        face_landmarks = face_recognition.face_landmarks(frame)
-        left_eye = face_landmarks[0]["left_eye"]
-        right_eye = face_landmarks[0]["right_eye"]
-        left_eye_center = (sum(x[0] for x in left_eye) // len(left_eye),
-                           sum(x[1] for x in left_eye) // len(left_eye))
-
-        right_eye_center = (sum(x[0] for x in right_eye) // len(right_eye),
-                            sum(x[1] for x in right_eye) // len(right_eye))
-
-        x1, y1 = left_eye_center
-        x2, y2 = right_eye_center
-        angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
-        return right_eye, right_eye, angle
-
-    def check_xy_movement(self, locations):
-        x, y = self.__get_average_distance(locations)
+    def check_xy_movement(self):
+        x, y = self.__get_xy_movement()
         print(x, y)
         x_msg = None
         y_msg = None
@@ -104,26 +108,19 @@ class FaceMovementRecognition:
             y_msg = f"Move Down"
         return (x_msg, y_msg) if x_msg and y_msg else ("Damn Bro", "Damn Bro")
 
+    def check_angle_movement(self):
+        angle = self.__get_angle_change()
+        if abs(angle) > self.atol:
+            return "Tilt Head Stright"
+        else:
+            return "Damn Bro"
+
     def is_sitting_wrong(self):
-        frames = self.__take_samples(10)
-        locations = self.__get_faces_locations(frames)
-        return {'z': self.check_z_movement(locations),
-                'x': self.check_xy_movement(locations)[0],
-                'y': self.check_xy_movement(locations)[1]}
-
-    @staticmethod
-    def __get_face_center(location):
-        t, r, b, l = location
-        return np.array([(r - l) / 2, (t - b) / 2])
-
-    @staticmethod
-    def __get_rect_size(location):
-        t, r, b, l = location
-        return abs(r - l) * abs(t - b)
-
-    @staticmethod
-    def get_face_distance(face1, face2):
-        return [f1 - f2 for f1, f2 in zip(face1, face2)]
+        self.__take_samples(10)
+        return {'z': self.check_z_movement(),
+                'x': self.check_xy_movement()[0],
+                'y': self.check_xy_movement()[1],
+                'angle': self.check_angle_movement()}
 
 
 def read_calibration_data(path):
@@ -149,7 +146,7 @@ def handle_status(status: dict):
 
 def main():
     cal = read_calibration_data('data.json')
-    rec = FaceMovementRecognition(cal, 20, 0.2)
+    rec = FaceMovementRecognition(cal, 20, 0.2, 10)
     while True:
         status = rec.is_sitting_wrong()
         handle_status(status)

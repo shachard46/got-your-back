@@ -20,7 +20,8 @@ def take_samples(amount):
 
 
 def get_faces_locations(frames):
-    return [face_recognition.face_locations(frame)[0] for frame in frames]
+    return [face_recognition.face_locations(frame)[0] for frame in frames
+            if face_recognition.face_locations(frame)]
 
 
 def get_face_center(location):
@@ -61,4 +62,3 @@ def main():
         sleep(60)
 
 
-main()

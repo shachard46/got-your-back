@@ -3,7 +3,7 @@ import face_recognition
 import cv2
 
 
-def get_webcam_screenshot():
+def get_webcam_screenshot(frame):
     # Open the webcam
     cap = cv2.VideoCapture(0)
 
@@ -30,7 +30,6 @@ def has_face(frame):
         for (top, right, bottom, left) in face_locations:
             face_encodings = face_recognition.face_encodings(
                 frame, face_locations)
-            print(face_encodings[0])
             # Get the face encoding for the face
             # Store the position and encoding data for the face in a dictionary
             face_data.update({
@@ -45,26 +44,8 @@ def has_face(frame):
         return False
 
 
-def calibrate():
+def calibrate(frame):
     status = False
     while not status:
-        status = get_webcam_screenshot()
-
-    # cap = cv2.VideoCapture(0)
-
-    # # Take a frame from the webcam
-    # ret, frame = cap.read()
-
-    # # Convert the frame to a JPEG image
-    # retval, buffer = cv2.imencode('.jpg', frame)
-
-    # # Encode the image as a base64 string
-    # image_b64 = base64.b64encode(buffer).decode()
-
-    # # Release the webcam
-    # cap.release()
-
-    # return image_b64
-
-
-# calibrate()
+        status = has_face(frame)
+    print("Done Calibrate")

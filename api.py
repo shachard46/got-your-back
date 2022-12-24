@@ -1,9 +1,12 @@
+import io
+from PIL import Image
 from fastapi import FastAPI
 import base64
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 import cv2
 from calibration import calibrate
+import numpy as np
 app = FastAPI()
 
 app.add_middleware(
@@ -13,36 +16,39 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-cap = cv2.VideoCapture(0)
-# set the width and height of the frame
-cap.set(3, 640)
-cap.set(4, 480)
+try:
+    camera = cv2.VideoCapture(0)
+    while not camera:
+        camera = cv2.VideoCapture(0)
+    print(camera)
+except:
+    print("problem with conection")
 
 
-@app.get("/calibrate/")
-def read_users():
-    return calibrate()
+def get_video():
+    success, frame = camera.read()
+    if not success:
+        while not success:
+            success, frame = camera.read()
+        # break
+    ret, buffer = cv2.imencode('.jpg', frame)
+    return buffer.tobytes()
 
 
-@app.get("/image")
-def get_image():
-    with open("face.jpg", "rb") as f:
-        image_data = f.read()
-    image_data_base64 = base64.b64encode(image_data).decode('utf-8')
-    return {"image": image_data_base64}
-
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-
+@app.c("/ws")
+async def get_stream(websocket: WebSocket):
     await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            if data == "Live":
+                await websocket.send_bytes(get_video())
+            elif data == "Calibrate":
+                success, frame = camera.read()
+                calibrate(frame)
+            else:
+                await websocket.send_bytes(get_video())
 
-    while True:
-        # capture a frame from the webcam
-        _, frame = cap.read()
-
-        # encode the frame as a Base64 string
-        frame_base64 = base64.b64encode(frame).decode('utf-8')
-
-        # send the encoded frame to the client
-        await websocket.send_text(frame_base64)
+    except WebSocketDisconnect:
+        camera.release()
+        print("Client disconnected")

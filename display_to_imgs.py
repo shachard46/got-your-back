@@ -1,7 +1,7 @@
 import face_recognition
 import cv2
 import numpy as np
-from error_recognition import get_face_distance, get_face_center
+from face_movment_recognition import get_face_distance, get_face_center
 # Load the two images
 img2 = face_recognition.load_image_file("face.jpg")
 img1 = face_recognition.load_image_file("face2.jpg")

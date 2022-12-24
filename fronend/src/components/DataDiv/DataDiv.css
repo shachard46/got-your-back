@@ -1,0 +1,14 @@
+.Data_div_container{
+    width: fit-content;
+    padding: 15px ;
+    background-color: white;
+    text-align: left;
+}
+.User_heder{
+    color: black;
+    text-align: center;
+    font-weight: bold;
+}
+.User_text{
+    color: black;
+}

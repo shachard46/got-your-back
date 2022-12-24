@@ -1,7 +1,6 @@
 import json
 import face_recognition
 import cv2
-import base64
 
 
 def get_webcam_screenshot():
@@ -51,21 +50,21 @@ def calibrate():
     while not status:
         status = get_webcam_screenshot()
 
-    cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture(0)
 
-    # Take a frame from the webcam
-    ret, frame = cap.read()
+    # # Take a frame from the webcam
+    # ret, frame = cap.read()
 
-    # Convert the frame to a JPEG image
-    retval, buffer = cv2.imencode('.jpg', frame)
+    # # Convert the frame to a JPEG image
+    # retval, buffer = cv2.imencode('.jpg', frame)
 
-    # Encode the image as a base64 string
-    image_b64 = base64.b64encode(buffer).decode()
+    # # Encode the image as a base64 string
+    # image_b64 = base64.b64encode(buffer).decode()
 
-    # Release the webcam
-    cap.release()
+    # # Release the webcam
+    # cap.release()
 
-    return image_b64
+    # return image_b64
 
 
-calibrate()
+# calibrate()

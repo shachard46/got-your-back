@@ -44,7 +44,7 @@ class FaceMovementRecognition:
             return "Sit Closer"
         if ratio > (1 + self.ztol):
             return "Sit Further"
-        return "Damn You Good"
+        return "Damn Bro"
 
     def get_eyes_fata(frame):
         face_landmarks = face_recognition.face_landmarks(frame)
@@ -63,7 +63,6 @@ class FaceMovementRecognition:
 
     def check_xy_movement(self, locations):
         x, y = self.__get_average_distance(locations)
-        print(x, y)
         x_msg = None
         y_msg = None
         if x > self.xytol:
@@ -112,16 +111,19 @@ def get_smaller_frame(frame, ratio=0.33):
 
 def handle_status(status: dict):
     notification = Notification('alert', '')
+    notification_str = ""
     for ax in status.keys():
-        if status[ax]:
-            # notification.set_message(status[ax])
-            # notification.notify()
-            print(status[ax])
+        if status[ax] != "Damn Bro":
+            notification_str += status[ax] + "\n"
+    if notification_str == "":
+        notification_str = "you are the man!!!"
+    notification.set_message(notification_str)
+    notification.notify()
 
 
 def main():
     cal = read_calibration_data('data.json')
-    rec = FaceMovementRecognition(cal, 20, 0.2)
+    rec = FaceMovementRecognition(cal, 20, 0.3)
     while True:
         status = rec.is_sitting_wrong()
         handle_status(status)

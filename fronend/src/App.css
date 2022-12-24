@@ -23,9 +23,23 @@
   color: #ffffff;
   text-align: center;
   font-size: 28px;
-  padding: 5px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 30px;
+  height: 144px;
+}
+
+.monitor_split{
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 10px;
+  }
+
+.video_section{
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-gap: 10px;
+}
+
+.buton_and_markd_img{
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 10px;
 }

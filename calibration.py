@@ -3,9 +3,6 @@ import base64
 import json
 import face_recognition
 import cv2
-<< << << < HEAD
-== == == =
->>>>>> > master
 
 
 def get_webcam_screenshot(frame):

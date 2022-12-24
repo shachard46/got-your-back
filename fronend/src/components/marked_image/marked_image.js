@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./marked_image.css";
 
-function ImageComponent() {
+function ImageComponent(props) {
   const [imageData, setImageData] = useState(null);
 
   useEffect(() => {
     async function fetchImage() {
-      const response = await fetch("http://localhost:8000/image");
-      const data = await response.json();
-      setImageData(data.image);
+      props.websocket.send("ImageComponent")
+      // const response = await fetch("http://localhost:8000/image");
+      // const data = await response.json();
+      // setImageData(data.image);
     }
     fetchImage();
   }, []);

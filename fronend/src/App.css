@@ -22,24 +22,24 @@
   border: none;
   color: #ffffff;
   text-align: center;
-  font-size: 28px;
-  height: 144px;
+  font-size: 20px;
+  height: 50px;
 }
 
-.monitor_split{
+.monitor_split {
   display: grid;
   grid-template-columns: auto auto;
   grid-gap: 10px;
-  }
+}
 
-.video_section{
+.video_section {
   display: grid;
   grid-template-rows: auto auto;
   grid-gap: 10px;
 }
 
-.buton_and_markd_img{
+.buton_and_markd_img {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
 }

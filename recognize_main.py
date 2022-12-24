@@ -37,4 +37,12 @@ def main():
         sleep(10)
 
 
+def run_one_time(camera):
+    cal = read_calibration_data('data.json')
+    rec = FaceMovementRecognition(cal, 20, 0.3, 10, camera)
+    status = rec.is_sitting_wrong()
+    print(status)
+    # handle_status(status)
+
+
 main()

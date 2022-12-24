@@ -35,7 +35,7 @@ def get_video():
     return buffer.tobytes()
 
 
-@app.c("/ws")
+@app.websocket("/ws")
 async def get_stream(websocket: WebSocket):
     await websocket.accept()
     try:
@@ -46,6 +46,8 @@ async def get_stream(websocket: WebSocket):
             elif data == "Calibrate":
                 success, frame = camera.read()
                 calibrate(frame)
+            elif data == "ImageComponent":
+                print("ImageComponent")
             else:
                 await websocket.send_bytes(get_video())
 

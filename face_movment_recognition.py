@@ -56,22 +56,21 @@ class Face:
 
 
 class FaceMovementRecognition:
-    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance) -> None:
+    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance, video_capture) -> None:
         self.ztol = z_tolerance
         self.atol = angle_tolerance
         self.xytol = xy_tolerance
         self.cal = Face(calibration)
         self.faces: list[Face] = []
+        self.video_capture = video_capture
 
     def __take_samples(self, amount):
-        self.video_capture = cv2.VideoCapture(0)
         try:
             self.faces = [Face(self.video_capture.read()[1])
                           for i in range(amount)]
             self.faces[0].get_eyes_location()
         except:
             self.faces = []
-        self.video_capture.release()
 
     def __get_avg_eyes_center(self):
         faces = [face.get_eyes_center() for face in self.faces]
@@ -134,4 +133,3 @@ class FaceMovementRecognition:
                     'angle': self.check_angle_movement()}
         else:
             return {'bad': "Face Not Found"}
-

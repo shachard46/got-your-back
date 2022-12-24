@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from "react";
 import Heder from "./components/Heder/Heder";
 import LiveCamera from "./components/LiveCamera/LiveCamera";
 import DataDiv from "./components/DataDiv/DataDiv";
-import ImageComponent from "./components/marked_image/marked_image";
 function App() {
   const [imageData, setImageData] = useState(null);
   const [websocket, setwebsocket] = useState(null);
@@ -44,13 +43,19 @@ function App() {
             >
               calibrate
             </button>
+            <button
+              className="button"
+              onClick={() => {
+                console.log(websocket)
+                websocket.send("Check My seating")
+              }}
+            >
+              Check My seating
+            </button>
 
-            <div className="marked_image">
-              {/* <ImageComponent /> */}
-            </div>
           </div>
         </div>
-        <DataDiv />
+        <DataDiv websocket={websocket} />
       </div>
       {/* <div className="Camera">
         <div>

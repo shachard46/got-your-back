@@ -30,7 +30,7 @@ def handle_status(status: dict):
 
 def main():
     cal = read_calibration_data('data.json')
-    rec = FaceMovementRecognition(cal, 20, 0.2, 10)
+    rec = FaceMovementRecognition(cal, 20, 0.2, 10, camera)
     while True:
         status = rec.is_sitting_wrong()
         handle_status(status)
@@ -41,8 +41,13 @@ def run_one_time(camera):
     cal = read_calibration_data('data.json')
     rec = FaceMovementRecognition(cal, 20, 0.3, 10, camera)
     status = rec.is_sitting_wrong()
-    print(status)
+    return status
+    # print(status)
     # handle_status(status)
 
 
-main()
+# camera = cv2.VideoCapture(0)
+
+
+# run_one_time(camera)
+# main()

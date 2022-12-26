@@ -7,6 +7,8 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 import cv2
 from calibration import calibrate
 import numpy as np
+from recognize_main import run_one_time
+import json
 app = FastAPI()
 
 app.add_middleware(
@@ -32,7 +34,7 @@ def get_video():
             success, frame = camera.read()
         # break
     ret, buffer = cv2.imencode('.jpg', frame)
-    return buffer.tobytes()
+    return buffer
 
 
 @app.websocket("/ws")
@@ -41,16 +43,27 @@ async def get_stream(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            if data == "Live":
-                await websocket.send_bytes(get_video())
+            sending_data = {"live": get_video()}
+            if data == "Check My seating":
+                d = run_one_time(camera)
+                # Convert the dictionary to a JSON string
+                json_data = json.dumps(d)
+                # Convert the JSON string to a bytes object
+                bytes_data = bytes(json_data, "utf-8")
+                await websocket.send_bytes(bytes_data)
             elif data == "Calibrate":
                 success, frame = camera.read()
                 calibrate(frame)
             elif data == "ImageComponent":
                 print("ImageComponent")
-            else:
-                await websocket.send_bytes(get_video())
+
+            sending_data["live"] = sending_data["live"].tolist()
+            json_data = json.dumps(sending_data)
+            # Convert the JSON string to a bytes object
+            bytes_data = bytes(json_data, "utf-8")
+            await websocket.send_bytes(bytes_data)
 
     except WebSocketDisconnect:
         camera.release()
         print("Client disconnected")
+        await websocket.close()

@@ -7,13 +7,8 @@ function ImageComponent(props) {
   useEffect(() => {
     async function fetchImage() {
       props.websocket.send("ImageComponent")
-      // const response = await fetch("http://localhost:8000/image");
-      // const data = await response.json();
-      // setImageData(data.image);
     }
-    fetchImage();
   }, []);
-
   return (
     <img
       src={`data:image/jpeg;base64,${imageData}`}

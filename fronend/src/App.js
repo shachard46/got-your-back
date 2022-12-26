@@ -1,32 +1,43 @@
 import "./App.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Heder from "./components/Heder/Heder";
 import LiveCamera from "./components/LiveCamera/LiveCamera";
 import DataDiv from "./components/DataDiv/DataDiv";
 function App() {
   const [imageData, setImageData] = useState(null);
-  const [websocket, setwebsocket] = useState(null);
+  const [websocket, setwebsocket] = useState("");
+  const [userData, setuserData] = useState({ "z": "null", "x": "null", "y": "null", "angle": "null" });
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000/ws");
-    setwebsocket(socket)
-    socket.onopen = () => {
-      socket.send("Hello from the client!");
-    };
-
-    socket.onmessage = (event) => {
-      let url = URL.createObjectURL(event.data);
-      setImageData(url);
-      console.log("new");
-    };
-
-    return () => socket.close(); // clean up the WebSocket connection when the component unmounts
-  }, []);
+    const web = new WebSocket("ws://localhost:8000/ws")
+    setwebsocket(web)
+  }, [])
   useEffect(() => {
-    if (websocket !== null) {
-      websocket.send("Live")
+    if (websocket !== "") {
+      websocket.onopen = () => {
+        websocket.send("Hello from the client!");
+      };
 
+      websocket.onmessage = async (event) => {
+        const text = await event.data.text();
+        const json = JSON.parse(text);
+        setImageData(json["live"]);
+        console.log(json["live"])
+        // setuserData({ "z": "null", "x": "null", "y": "null", "angle": "null" })
+
+      }
     }
-  }, [imageData]);
+
+  }, [websocket]);
+  useEffect(() => {
+    if (websocket !== "") {
+      if (websocket.readyState === 1) {
+        console.log("live")
+
+        websocket.send("Live")
+      }
+    }
+
+  }, [imageData, websocket]);
   return (
     <div className="App">
       <Heder />
@@ -46,7 +57,6 @@ function App() {
             <button
               className="button"
               onClick={() => {
-                console.log(websocket)
                 websocket.send("Check My seating")
               }}
             >
@@ -55,7 +65,7 @@ function App() {
 
           </div>
         </div>
-        <DataDiv websocket={websocket} />
+        <DataDiv websocket={websocket} userData={userData} />
       </div>
       {/* <div className="Camera">
         <div>

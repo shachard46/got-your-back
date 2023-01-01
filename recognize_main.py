@@ -50,6 +50,6 @@ def check_sitting_status(camera):
     return status
 
 
-image_files = list(map(cv2.imread, glob.glob('./Test_image/*.jpg')))
-calibration_img = cv2.imread('calibration_img.jpg')
-print(get_sitting_status(calibration_img, image_files)[0])
+# image_files = list(map(cv2.imread, glob.glob('./Test_image/*.jpg')))
+# calibration_img = cv2.imread('calibration_img.jpg')
+# print(get_sitting_status(calibration_img, image_files[0:2])[0])

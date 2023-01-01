@@ -1,0 +1,15 @@
+.live_view {
+    /* width: 100vw; */
+    height: 50vh;
+    background-color: transparent;
+}
+
+.app__videoFeed {
+    border-radius: 10px;
+}
+
+.All_video {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 5vw;
+}

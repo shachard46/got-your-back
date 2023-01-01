@@ -1,0 +1,26 @@
+.heder {
+    font-weight: bold;
+    display: grid;
+    grid-template-columns: 20vw 20vw 20vw 20vw;
+    gap: 5vw;
+    text-align: center;
+    font-size: 30px;
+
+}
+
+.pos {
+    display: grid;
+    grid-template-columns: 20vw 20vw 20vw 20vw;
+    gap: 5vw;
+    text-align: center;
+    font-size: 24px;
+}
+
+.msg {
+    display: grid;
+    grid-template-columns: 20vw 20vw 20vw 20vw;
+    gap: 5vw;
+    text-align: center;
+    font-size: 24px;
+
+}

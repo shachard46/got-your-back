@@ -16,3 +16,5 @@ public/build/
 
 # Ignore test coverage reports
 coverage/
+
+# Test_image/

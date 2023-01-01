@@ -13,3 +13,12 @@
     grid-template-columns: auto auto;
     gap: 5vw;
 }
+
+html,
+body,
+.notification-parent,
+.notification-title,
+.notification-message,
+.notification-item {
+    font-size: 16px !important;
+}

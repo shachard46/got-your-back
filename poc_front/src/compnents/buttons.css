@@ -3,8 +3,8 @@
     margin-bottom: 10vh;
 
     display: grid;
-    grid-template-columns: auto auto auto;
-    gap: 5vw;
+    grid-template-columns: auto auto;
+    gap: 15vw;
 }
 
 
@@ -12,6 +12,7 @@
 /* CSS */
 .button-34 {
     background: #5E5DF0;
+    /* background: #333333; */
     border-radius: 999px;
     box-shadow: #5E5DF0 0 10px 20px -10px;
     box-sizing: border-box;

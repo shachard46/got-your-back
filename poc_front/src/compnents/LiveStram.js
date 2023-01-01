@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import tempImage from '../img/TempPhoto.png';
-
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import './LiveStram.css';
 
 function LiveStram(props) {
@@ -8,6 +9,8 @@ function LiveStram(props) {
     useEffect(() => {
         if (props.takecalibrationPhoto === true) {
             props.setcalibrationPhoto(takeScreenshot())
+            NotificationManager.success('Calibration photo taken');
+
             props.settakeScreenshot(false)
         }
     }, [props.takecalibrationPhoto])

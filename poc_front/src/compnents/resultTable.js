@@ -15,7 +15,7 @@ function ResultTable(props) {
             setZ(props.result["z"])
             setAngle(props.result["angle"])
         }
-    }, props.result)
+    }, [props.result])
     return (
         <div className="ResultTable">
             <div className='heder'>

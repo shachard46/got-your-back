@@ -96,7 +96,8 @@ class FaceMovementRecognition:
         return self.__get_avg_face_angle() - self.cal.get_face_angle()
 
     def check_z_movement(self):
-        ratio = self.__get_ratio()
+        ratio = self.__get_ratio() ** 1.4
+        print('ratio', ratio)
         if ratio < (1 - self.ztol):
             return "Sit Closer"
         if ratio > (1 + self.ztol):
@@ -113,7 +114,7 @@ class FaceMovementRecognition:
             x_msg = f"Move Left"
         if y > self.xytol:
             y_msg = f"Move Up"
-        elif y < self.xytol:
+        elif y < -self.xytol:
             y_msg = f"Move Down"
         return (x_msg, y_msg) if x_msg and y_msg else ("Damn Bro", "Damn Bro")
 
@@ -125,7 +126,7 @@ class FaceMovementRecognition:
             return "Damn Bro"
 
     def is_sitting_wrong(self):
-        self.__take_samples(10)
+        self.__take_samples(2)
         if self.faces:
             return {'z': self.check_z_movement(),
                     'x': self.check_xy_movement()[0],

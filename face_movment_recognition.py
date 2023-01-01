@@ -56,14 +56,14 @@ class Face:
 
 
 class FaceMovementRecognition:
-    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance, video_capture, faces: list[Face] = []) -> None:
+    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance, video_capture=[], faces: list[Face] = []) -> None:
         self.ztol = z_tolerance
         self.atol = angle_tolerance
         self.xytol = xy_tolerance
         self.cal = Face(calibration)
         self.faces: list[Face] = faces
         if faces:
-            faces = [face.get_eyes_location() for face in faces]
+            faces = [Face(face) for face in faces]
         self.video_capture = video_capture
 
     def __take_samples(self, amount):

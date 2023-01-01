@@ -3,9 +3,7 @@ import cv2
 import numpy as np
 import json
 from face_movment_recognition import Face
-# Load the two images
-img2 = face_recognition.load_image_file("face.jpg")
-img1 = face_recognition.load_image_file("face2.jpg")
+
 
 # Get the width and height of the images
 

@@ -1,3 +1,4 @@
+import glob
 from time import sleep
 import json
 import cv2
@@ -47,3 +48,8 @@ def check_sitting_status(camera):
     rec = FaceMovementRecognition(cal, 5, 0.3, 10, camera)
     status = rec.get_sitting_status()
     return status
+
+
+image_files = list(map(cv2.imread, glob.glob('./Test_image/*.jpg')))
+calibration_img = cv2.imread('calibration_img.jpg')
+print(get_sitting_status(calibration_img, image_files))

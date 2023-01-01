@@ -3,8 +3,8 @@ import json
 import cv2
 import numpy as np
 from notification import Notification
-import math
 from face_movment_recognition import FaceMovementRecognition
+from display_to_imgs import get_img_diff
 
 
 def read_calibration_data(path):
@@ -28,26 +28,22 @@ def handle_status(status: dict):
             print(status[ax])
 
 
-def main():
+def check_sitting_status_continusly(camera):
     cal = read_calibration_data('data.json')
     rec = FaceMovementRecognition(cal, 5, 0.2, 10, camera)
     while True:
-        status = rec.is_sitting_wrong()
+        status = rec.get_sitting_status()
         handle_status(status)
         sleep(5)
 
 
-def run_one_time(camera):
+def get_sitting_status(cal, imgs):
+    rec = FaceMovementRecognition(cal, 5, 0.3, 10, faces=imgs)
+    return rec.get_sitting_status(), get_img_diff(cal, imgs[len(imgs) // 2])
+
+
+def check_sitting_status(camera):
     cal = read_calibration_data('data.json')
     rec = FaceMovementRecognition(cal, 5, 0.3, 10, camera)
-    status = rec.is_sitting_wrong()
+    status = rec.get_sitting_status()
     return status
-    # print(status)
-    # handle_status(status)
-
-
-# camera = cv2.VideoCapture(0)
-
-
-# run_one_time(camera)
-# main()

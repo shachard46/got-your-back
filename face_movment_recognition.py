@@ -56,12 +56,14 @@ class Face:
 
 
 class FaceMovementRecognition:
-    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance, video_capture) -> None:
+    def __init__(self, calibration, xy_tolerance, z_tolerance, angle_tolerance, video_capture, faces: list[Face] = []) -> None:
         self.ztol = z_tolerance
         self.atol = angle_tolerance
         self.xytol = xy_tolerance
         self.cal = Face(calibration)
-        self.faces: list[Face] = []
+        self.faces: list[Face] = faces
+        if faces:
+            faces = [face.get_eyes_location() for face in faces]
         self.video_capture = video_capture
 
     def __take_samples(self, amount):
@@ -97,17 +99,17 @@ class FaceMovementRecognition:
 
     def check_z_movement(self):
         ratio = self.__get_ratio() ** 1.4
-        print('ratio', ratio)
+        status = {'msg': "Damn Bro", 'pos': ratio}
         if ratio < (1 - self.ztol):
-            return "Sit Closer"
-        if ratio > (1 + self.ztol):
-            return "Sit Further"
-        return "Damn You Good"
+            status["msg"] = "Sit Closer"
+        elif ratio > (1 + self.ztol):
+            status["msg"] = "Sit Further"
+        return status
 
     def check_xy_movement(self):
         x, y = self.__get_xy_movement()
-        x_msg = None
-        y_msg = None
+        x_msg = "Damn Bro"
+        y_msg = "Damn Bro"
         if x > self.xytol:
             x_msg = f"Move Right"
         elif x < -self.xytol:
@@ -116,21 +118,22 @@ class FaceMovementRecognition:
             y_msg = f"Move Up"
         elif y < -self.xytol:
             y_msg = f"Move Down"
-        return (x_msg, y_msg) if x_msg and y_msg else ("Damn Bro", "Damn Bro")
+        return ({'msg': x_msg, 'pos': x}, {'msg': y_msg, 'pos': y})
 
     def check_angle_movement(self):
         angle = self.__get_angle_change()
+        status = {'msg': "Damn Bro", 'pos': angle}
         if abs(angle) > self.atol:
-            return "Tilt Head Stright"
-        else:
-            return "Damn Bro"
+            status["msg"] = "Tilt Head Stright"
+        return status
 
-    def is_sitting_wrong(self):
-        self.__take_samples(2)
+    def get_sitting_status(self):
+        if not self.faces:
+            self.__take_samples(2)
         if self.faces:
             return {'z': self.check_z_movement(),
                     'x': self.check_xy_movement()[0],
                     'y': self.check_xy_movement()[1],
                     'angle': self.check_angle_movement()}
         else:
-            return {'bad': "Face Not Found"}
+            return {'msg': "Face Not Found"}

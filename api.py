@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 import cv2
 from calibration import calibrate
 import numpy as np
-from recognize_main import run_one_time
+from recognize_main import check_sitting_status
 import json
 app = FastAPI()
 
@@ -45,7 +45,7 @@ async def get_stream(websocket: WebSocket):
             data = await websocket.receive_text()
             sending_data = {"live": get_video()}
             if data == "Check My seating":
-                d = run_one_time(camera)
+                d = check_sitting_status(camera)
                 # Convert the dictionary to a JSON string
                 json_data = json.dumps(d)
                 # Convert the JSON string to a bytes object

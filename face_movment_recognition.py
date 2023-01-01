@@ -61,9 +61,8 @@ class FaceMovementRecognition:
         self.atol = angle_tolerance
         self.xytol = xy_tolerance
         self.cal = Face(calibration)
-        self.faces: list[Face] = faces
         if faces:
-            faces = [Face(face) for face in faces]
+            self.faces = [Face(face) for face in faces]
         self.video_capture = video_capture
 
     def __take_samples(self, amount):
@@ -137,3 +136,13 @@ class FaceMovementRecognition:
                     'angle': self.check_angle_movement()}
         else:
             return {'msg': "Face Not Found"}
+
+    def get_img_diff(self):
+        face = self.faces[len(self.faces) // 2]
+        t1, l1, b1, r1 = self.cal.get_face_location()
+        t2, l2, b2, r2 = face.get_face_location()
+        cv2.rectangle(face.frame, (l1, t1), (r1, b1), (0, 0, 255), 2)
+        cv2.rectangle(face.frame, (l2, t2), (r2, b2), (0, 0, 255), 2)
+        # Display the resulting image
+        ret, buffer = cv2.imencode(".jpg", face.frame)
+        return json.dumps(buffer.tolist())

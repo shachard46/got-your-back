@@ -4,7 +4,7 @@ import json
 import cv2
 import numpy as np
 from notification import Notification
-from face_movment_recognition import FaceMovementRecognition
+from face_movment_recognition import FaceMovementRecognition, Face
 from display_to_imgs import get_img_diff
 
 
@@ -40,7 +40,7 @@ def check_sitting_status_continusly(camera):
 
 def get_sitting_status(cal, imgs):
     rec = FaceMovementRecognition(cal, 5, 0.3, 10, faces=imgs)
-    return rec.get_sitting_status(), get_img_diff(cal, imgs[len(imgs) // 2])
+    return rec.get_sitting_status(), rec.get_img_diff()
 
 
 def check_sitting_status(camera):
@@ -52,4 +52,4 @@ def check_sitting_status(camera):
 
 image_files = list(map(cv2.imread, glob.glob('./Test_image/*.jpg')))
 calibration_img = cv2.imread('calibration_img.jpg')
-print(get_sitting_status(calibration_img, image_files))
+print(get_sitting_status(calibration_img, image_files)[0])
